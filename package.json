@@ -1,0 +1,36 @@
+{
+  "name": "hyper-mashmau",
+  "version": "0.1.0",
+  "description": "A simple client for dealing with Hyper Media APIs",
+  "main": "dist/index.js",
+  "devDependencies": {
+    "@types/chai": "^4.2.19",
+    "@types/mocha": "^8.2.2",
+    "@types/node": "^16.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.28.1",
+    "@typescript-eslint/parser": "^4.28.1",
+    "chai": "^4.3.4",
+    "eslint": "^7.30.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "mocha": "^8.4.0",
+    "prettier": "^2.3.2",
+    "ts-mocha": "^8.0.0",
+    "tslib": "^1.14.1",
+    "typescript": "^4.3.5"
+  },
+  "scripts": {
+    "test": "ts-mocha --paths -p './tsconfig.json' 'test/**/*.spec.ts'",
+    "test:coverage": "jest --coverage",
+    "build": "tsc",
+    "lint": "eslint 'src/**' --quiet --fix"
+  },
+  "keywords": [
+    "hypermedia",
+    "api",
+    "http",
+    "hal"
+  ],
+  "author": "Dusan Turajlic",
+  "license": "ISC"
+}
