@@ -1,0 +1,10 @@
+{
+  "_links": {
+    "self": {
+      "href": "https://example.org/api/user/0"
+    }
+  },
+  "name": "Percy Vere",
+  "age": 35,
+  "gender": "female"
+}
