@@ -3,11 +3,16 @@
     "target": "es5",
     "module": "commonjs",
     "strict": true,
-    "outDir": "dist",
+    "outDir": "./dist",
     "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": [ "./src/", "./src/*"]
-    } 
+      "@/*": ["./src/*"],
+    }
+  },
+  "include": ["index.d.ts", "./src", "./test"],
+  "ts-node": {
+    "files": true
   }
 }
