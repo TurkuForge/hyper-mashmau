@@ -1,13 +1,12 @@
 # HyperMashmau for Node.js and the Browser
-I created this library becasue I feel Hyper media does not have a good frontend tool for traversion data. This allows a simular workflow to Falcor and GraphQL
-but gives you the power to use your a HAL based Hyper media APIs.
+We created this library because we feel Hypermedia APIs do not have any good frontend tools for traversing data.
+This library has a similar workflow to [Falcor](https://netflix.github.io/falcor/) or [GraphQL](https://graphql.org/) 
+but gives you the power to use your HAL-based Hypermedia APIs.
 
-This library tries not to be super opininated and keeps thing open for extention.
+This library tries not to be opinionated and keeps things open for extension.
 
-The idea behind the library is simple "Write Less Do More". I took a look at what other successful libraryes have done well and tried to mimic that in the Hypermedia 
-context.
-
-The API is supose to be varry simple to work with.
+The idea behind the library is simple "Write Less Do More". We took a look at what other successful libraries have done well and tried to mimic that in the Hypermedia context.
+The HyperMashmau is simple to use and easy to migrate to.
 ```typescript
 const hyperMashmau = new HyperMashmau({ apiRootUrl: 'https://example.org/api' });
 const { name, age, gender } = await hyperMashmau.get<{name: string, age: number, gender: string}>(`/hm:users/0/{
@@ -16,5 +15,6 @@ const { name, age, gender } = await hyperMashmau.get<{name: string, age: number,
   gender,
 }`);
 ```
-The code above will actualy make multable API requests if needed. Lets say `_embedded` only has `name` then the library will get the self link and get the 
-full resource and return to you the data a object with `{ name, age, gender }`.
+The code above will make multiple API requests if needed. Let’s say `_embedded` has a `hm:user` but that resource only has `name` then the library will get the self 
+link of that resource and try to find the remaining values from the full resource. 
+If it can't find the values their ether it will print an error but still return the data it could find.
