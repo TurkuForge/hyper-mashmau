@@ -6,7 +6,7 @@ export interface HyperMashmauParams {
     apiRootUrl: string;
 }
 
-type ArrayOrSingle<T = Record<string, any>> = T extends Array<T> ? T[] : T;
+type ArrayOrSingle<T = Record<string, unknown>> = T extends Array<T> ? T[] : T;
 
 const START_CONTENT_CHARACTER = '{';
 const END_CONTENT_CHARACTER = '}';
@@ -26,7 +26,7 @@ export class HyperMashmau {
         this.rootRequest = this.httpClient.getResponse();
     }
 
-    async get<T = Record<string, any>>(mashmauPointer: string): Promise<ArrayOrSingle<T>> {
+    async get<T = Record<string, unknown>>(mashmauPointer: string): Promise<ArrayOrSingle<T>> {
         await this.isRootPending();
         return this.findResource<T>(mashmauPointer, this.apiRoot as Resource);
     }

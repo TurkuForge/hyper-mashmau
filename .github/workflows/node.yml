@@ -1,0 +1,22 @@
+name: HyperMashmau CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: node:14-alpine
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependecies
+        run: npm install
+      - name: Run Linter
+        run: npm run lint
+      - name: Run Tests
+        run: npm run test:coverage
