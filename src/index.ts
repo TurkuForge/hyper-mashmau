@@ -6,7 +6,7 @@ export interface HyperMashmauParams {
     apiRootUrl: string;
 }
 
-type ArrayOrSingle<T = Record<string, any>> = T extends Array<T> ? T[] : T;
+type ArrayOrSingle<T = Record<string, unknown>> = T extends Array<T> ? T[] : T;
 
 const START_CONTENT_CHARACTER = '{';
 const END_CONTENT_CHARACTER = '}';
@@ -26,7 +26,7 @@ export class HyperMashmau {
         this.rootRequest = this.httpClient.getResponse();
     }
 
-    async get<T = Record<string, any>>(mashmauPointer: string): Promise<ArrayOrSingle<T>> {
+    async get<T = Record<string, unknown>>(mashmauPointer: string): Promise<ArrayOrSingle<T>> {
         await this.isRootPending();
         return this.findResource<T>(mashmauPointer, this.apiRoot as Resource);
     }
@@ -90,15 +90,14 @@ export class HyperMashmau {
         const linkResource = linkPointer.get(links);
 
         if (linkResource) {
-            let href;
+            let link: Link;
             if (Array.isArray(linkResource)) {
-                const [link] = linkResource;
-                href = link.href;
+                link = linkResource[0];
             } else {
-                href = (linkResource as Link).href;
+                link = linkResource as Link;
             }
 
-            this.httpClient.get(href);
+            this.httpClient.get(link);
             const response = await this.httpClient.getResponse();
             const path = pointer.path.filter((item) => !linkPointer.path.includes(item));
             return this.getResource(JsonPointer.create(path), response);

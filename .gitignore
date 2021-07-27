@@ -4,7 +4,8 @@ results
 tmp
 
 # Coverage reports
-coverage
+.nyc_output/
+coverage/
 
 # Dependency directory
 node_modules
