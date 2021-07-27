@@ -1,0 +1,10 @@
+{
+  "_links": {
+    "self": {
+      "href": "https://example.org/api/user/2"
+    }
+  },
+  "name": "Sally Smith",
+  "age": 48,
+  "gender": "female"
+}

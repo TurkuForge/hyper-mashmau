@@ -1,10 +1,12 @@
-import { JsonPointer } from 'json-ptr';
-import { Resource } from 'halfred';
+import { JsonPointer, PathSegments } from 'json-ptr';
+import { Link, Resource } from 'halfred';
 
 export interface HyperMashmauParams {
     httpClient: HttpClient;
     apiRootUrl: string;
 }
+
+type ArrayOrSingle<T = Record<string, any>> = T extends Array<T> ? T[] : T;
 
 const START_CONTENT_CHARACTER = '{';
 const END_CONTENT_CHARACTER = '}';
@@ -24,11 +26,14 @@ export class HyperMashmau {
         this.rootRequest = this.httpClient.getResponse();
     }
 
-    async get<T = Record<string, unknown>>(pointer: string): Promise<any> {
+    async get<T = Record<string, any>>(mashmauPointer: string): Promise<ArrayOrSingle<T>> {
         await this.isRootPending();
-        const { data, jsonPointer } = this.getJsonPointerAndData(pointer);
-        const embedded = this.apiRoot?.allEmbeddedResourceArrays();
-        let resources = jsonPointer.get(embedded) as Resource | Resource[];
+        return this.findResource<T>(mashmauPointer, this.apiRoot as Resource);
+    }
+
+    private async findResource<T>(mashmauPointer: string, resource: Resource): Promise<ArrayOrSingle<T>> {
+        const { data, jsonPointer } = this.getJsonPointerAndData(mashmauPointer);
+        let resources = await this.getResource(jsonPointer, resource);
         if (resources) {
             if (!Array.isArray(resources)) {
                 resources = [resources] as Resource[];
@@ -50,10 +55,59 @@ export class HyperMashmau {
                 }
 
                 return response;
-            });
+            }) as unknown as ArrayOrSingle<T>;
         }
 
-        return Promise.reject(`Cannot find resource matching pattern ${pointer}`);
+        return Promise.reject(
+            `Cannot find resource matching pattern ${this.convertToMashmauPointer(jsonPointer, data)}`,
+        );
+    }
+
+    private async getResource(jsonPointer: JsonPointer, resource: Resource): Promise<Resource | Resource[] | void> {
+        let resources: Resource | Resource[] | Promise<Resource | Resource[] | void> = this.getEmbeddedResource(
+            jsonPointer,
+            resource,
+        );
+        if (!resources) {
+            resources = this.getLinkedResource(jsonPointer, resource);
+        }
+
+        return resources;
+    }
+
+    private async getLinkedResource(pointer: JsonPointer, resource: Resource) {
+        const links = resource.allLinkArrays() ?? {};
+        const findCorrectPath = (path: PathSegments): JsonPointer => {
+            const jsonPointer = JsonPointer.create(path);
+            if (JsonPointer.has(links, jsonPointer)) {
+                return jsonPointer;
+            } else {
+                path.pop();
+                return findCorrectPath(path);
+            }
+        };
+        const linkPointer = findCorrectPath([...pointer.path]);
+        const linkResource = linkPointer.get(links);
+
+        if (linkResource) {
+            let href;
+            if (Array.isArray(linkResource)) {
+                const [link] = linkResource;
+                href = link.href;
+            } else {
+                href = (linkResource as Link).href;
+            }
+
+            this.httpClient.get(href);
+            const response = await this.httpClient.getResponse();
+            const path = pointer.path.filter((item) => !linkPointer.path.includes(item));
+            return this.getResource(JsonPointer.create(path), response);
+        }
+    }
+
+    private getEmbeddedResource(pointer: JsonPointer, resource: Resource) {
+        const embedded = resource.allEmbeddedResourceArrays() ?? {};
+        return pointer.get(embedded) as Resource | Resource[];
     }
 
     private getJsonPointerAndData(pointer: string): { data: string[]; jsonPointer: JsonPointer } {
@@ -62,6 +116,7 @@ export class HyperMashmau {
         const end = pointer.lastIndexOf(END_CONTENT_CHARACTER);
         const data = pointer.slice(start + 1, end).split(',');
         if (data[data.length - 1] === '') {
+            // In case a trailing comma was present in the pointer
             data.pop();
         }
 
@@ -87,6 +142,10 @@ export class HyperMashmau {
                 }, {}) as unknown as T,
             );
         });
+    }
+
+    private convertToMashmauPointer(jsonPointer: JsonPointer, data: string[]) {
+        return `${jsonPointer.pointer}/{${data.join(',')}}`;
     }
 
     private async isRootPending() {

@@ -1,0 +1,10 @@
+{
+  "_links": {
+    "self": {
+      "href": "https://example.org/api/user/50"
+    }
+  },
+  "name": "Evan Butler",
+  "age": 18,
+  "gender": "male"
+}
