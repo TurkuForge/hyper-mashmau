@@ -90,15 +90,14 @@ export class HyperMashmau {
         const linkResource = linkPointer.get(links);
 
         if (linkResource) {
-            let href;
+            let link: Link;
             if (Array.isArray(linkResource)) {
-                const [link] = linkResource;
-                href = link.href;
+                link = linkResource[0];
             } else {
-                href = (linkResource as Link).href;
+                link = linkResource as Link;
             }
 
-            this.httpClient.get(href);
+            this.httpClient.get(link);
             const response = await this.httpClient.getResponse();
             const path = pointer.path.filter((item) => !linkPointer.path.includes(item));
             return this.getResource(JsonPointer.create(path), response);
