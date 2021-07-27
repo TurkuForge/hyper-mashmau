@@ -1,0 +1,10 @@
+{
+  "_links": {
+    "self": {
+      "href": "https://example.org/api/user/3"
+    }
+  },
+  "name": "Samantha Jordan",
+  "age": 26,
+  "gender": "female"
+}

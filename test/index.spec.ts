@@ -11,12 +11,13 @@ interface UserResponse {
 
 describe('HyperMashmau usage', () => {
     let hyperMashmau: HyperMashmau;
-    const sandbox = sinon.createSandbox();
-    const httpClient = sandbox.spy(new MockFsAPI());
+    let httpClient: sinon.SinonSpiedInstance<HttpClient>;
     before(() => {
+        const sandbox = sinon.createSandbox();
+        httpClient = sandbox.spy(new MockFsAPI());
         hyperMashmau = new HyperMashmau({
             httpClient,
-            apiRootUrl: '/api/root',
+            apiRootUrl: 'https://example.org/api/root',
         });
     });
 
@@ -55,8 +56,30 @@ describe('HyperMashmau usage', () => {
     it('Gets only embedded user data', async () => {
         const { name } = await hyperMashmau.get(`/hm:users/0/{name}`);
         expect(name).to.equal('Hugo First');
-        expect(httpClient.get.calledWith({ href: 'https://example.org/api/user/0', templated: false })).to.false;
+        expect(httpClient.get.lastCall).to.not.equal({ href: 'https://example.org/api/user/0', templated: false });
     });
 
-    it('Gets data from a link when its not present in the embedded', () => {});
+    it('Gets data from a link when its not present in the embedded', async () => {
+        const { name, age, gender } = await hyperMashmau.get<UserResponse>(`/next/hm:users/0/{
+            name,
+            age,
+            gender, 
+        }`);
+
+        expect(name).equal('Sally Smith');
+        expect(age).to.equal(48);
+        expect(gender).to.equal('female');
+    });
+
+    it('Gets data from deep nested links', async () => {
+        const { name, age, gender } = await hyperMashmau.get<UserResponse>(`/next/last/hm:users/1/{
+            name,
+            age,
+            gender, 
+        }`);
+
+        expect(name).equal('Evan Butler');
+        expect(age).to.equal(18);
+        expect(gender).to.equal('male');
+    });
 });

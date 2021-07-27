@@ -1,0 +1,37 @@
+{
+  "_links": {
+    "self": {
+      "href": "https://example.org/api"
+    },
+    "prev": {
+      "href": "https://example.org/api/user?page=1"
+    },
+    "next": {
+      "href": "https://example.org/api/user?page=3"
+    },
+    "last": {
+      "href": "https://example.org/api/user?page=25"
+    }
+  },
+  "_embedded": {
+    "hm:users": [
+      {
+        "_links": {
+          "self": {
+            "href": "https://example.org/api/user/2"
+          }
+        },
+        "name": "Sally Smith"
+      },
+      {
+        "_links": {
+          "self": {
+            "href": "https://example.org/api/user/3"
+          }
+        },
+        "name": "Samantha Jordan"
+      }
+    ]
+  },
+  "total": 50
+}

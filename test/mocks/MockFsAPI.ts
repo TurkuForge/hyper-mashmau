@@ -64,7 +64,8 @@ export default class MockFsAPI implements HttpClient {
              *  // The readFile path paramater should looks like this
              *  fs.readFile(`./api/user/0.json`)
              */
-            fs.readFile(`${__dirname}${url.pathname}.json`, 'utf8', function (err: unknown, data: string) {
+            const fileName = url.search.length ? `${url.pathname}${url.search}` : url.pathname;
+            fs.readFile(`${__dirname}${fileName}.json`, 'utf8', function (err: unknown, data: string) {
                 if (err) {
                     reject(err);
                 }
