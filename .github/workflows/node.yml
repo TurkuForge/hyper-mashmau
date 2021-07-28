@@ -11,12 +11,19 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    container: node:14-alpine
+    container: node:14
     steps:
       - uses: actions/checkout@v2
       - name: Install Dependecies
-        run: npm install
+        run: npm ci
       - name: Run Linter
         run: npm run lint
       - name: Run Tests
         run: npm run test:coverage
+      - name: Upload Coverage Report To Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./coverage
+          fail_ci_if_error: true
+          verbose: true
