@@ -15,8 +15,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install Dependecies
-        run: npm install
+        run: npm ci
       - name: Run Linter
         run: npm run lint
       - name: Run Tests
         run: npm run test:coverage
+      - uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info # optional
+          fail_ci_if_error: true
+          verbose: true

@@ -1,4 +1,6 @@
 ![example workflow](https://github.com/TurkuForge/HyperMashmau/actions/workflows/node.yml/badge.svg)
+![Coverage Badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/dusan-turajlic/8965bef2b017d5e6cefd8fafeff41e12/raw/hyper_mashmau__main.json)
+
 # HyperMashmau for Node.js and the Browser
 We created this library because we feel Hypermedia APIs do not have any good frontend tools for traversing data.
 This library has a similar workflow to [Falcor](https://netflix.github.io/falcor/) or [GraphQL](https://graphql.org/) 
