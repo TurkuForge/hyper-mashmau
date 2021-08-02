@@ -1,4 +1,4 @@
-import { HyperMashmau } from '@/index';
+import { HyperMashmau, HyperMashmauParams } from '@/index';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import MockFsAPI from './mocks/MockFsAPI';
@@ -21,10 +21,21 @@ describe('HyperMashmau usage', () => {
         });
     });
 
+    it('Throws error when no http client has been specified', () => {
+        expect(() => new HyperMashmau({} as HyperMashmauParams)).to.throw('httpClient is required');
+    });
+
     it('Can get data straight from _embedded without any API requests', async () => {
         const { name } = await hyperMashmau.get(`/hm:users/0/{name}`);
         expect(httpClient.get.lastCall).to.not.equal({ href: 'https://example.org/api/user/0', templated: false });
         expect(name).to.equal('Hugo First');
+    });
+
+    it('Throws error when path does not match', (done) => {
+        hyperMashmau.get('/not:real/1000/{name}').catch((error: string) => {
+            expect(error).to.equal('Cannot find resource matching pattern /not:real/1000/{name}');
+            done();
+        });
     });
 
     it('Can get full resource from self link when data is missing in _embedded', async () => {

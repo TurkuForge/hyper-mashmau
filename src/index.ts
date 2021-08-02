@@ -87,20 +87,21 @@ export class HyperMashmau {
             }
         };
         const linkPointer = findCorrectPath([...pointer.path]);
-        const linkResource = linkPointer.get(links);
+        if (linkPointer?.path?.length > 0) {
+            const linkResource = linkPointer.get(links);
+            if (linkResource) {
+                let link: Link;
+                if (Array.isArray(linkResource)) {
+                    link = linkResource[0];
+                } else {
+                    link = linkResource as Link;
+                }
 
-        if (linkResource) {
-            let link: Link;
-            if (Array.isArray(linkResource)) {
-                link = linkResource[0];
-            } else {
-                link = linkResource as Link;
+                this.httpClient.get(link);
+                const response = await this.httpClient.getResponse();
+                const path = pointer.path.filter((item) => !linkPointer.path.includes(item));
+                return this.getResource(JsonPointer.create(path), response);
             }
-
-            this.httpClient.get(link);
-            const response = await this.httpClient.getResponse();
-            const path = pointer.path.filter((item) => !linkPointer.path.includes(item));
-            return this.getResource(JsonPointer.create(path), response);
         }
     }
 
@@ -119,11 +120,7 @@ export class HyperMashmau {
             data.pop();
         }
 
-        let jsonPointer = pointer.slice(0, start - 1);
-        if (jsonPointer.slice(jsonPointer.length - 1) === '/') {
-            // in case depth is not specified it will return everything
-            jsonPointer += '-';
-        }
+        const jsonPointer = pointer.slice(0, start - 1);
 
         return { data, jsonPointer: new JsonPointer(jsonPointer) };
     }
