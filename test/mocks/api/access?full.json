@@ -1,0 +1,8 @@
+{
+  "_links": {
+    "self": {
+      "href": "https://example.org/api/access?full"
+    }
+  },
+  "access": "full"
+}

@@ -8,7 +8,21 @@
     },
     "last": {
       "href": "https://example.org/api/user?page=25"
-    }
+    },
+    "hm:access": [
+      {
+        "name": "full",
+        "href": "https://example.org/api/access?full"
+      },
+      {
+        "name": "partial",
+        "href": "https://example.org/api/access?partial"
+      },
+      {
+        "name": "low",
+        "href": "https://example.org/api/access?low"
+      }
+    ]
   },
   "_embedded": {
     "hm:users": [

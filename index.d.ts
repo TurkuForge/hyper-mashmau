@@ -16,4 +16,5 @@ type HttpClientUrl = Self | string;
 interface Self {
     href: string;
     templated?: boolean;
+    name?: string;
 }

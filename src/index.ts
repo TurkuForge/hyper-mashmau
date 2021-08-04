@@ -64,10 +64,13 @@ export class HyperMashmau {
     }
 
     private async getResource(jsonPointer: JsonPointer, resource: Resource): Promise<Resource | Resource[] | void> {
-        let resources: Resource | Resource[] | Promise<Resource | Resource[] | void> = this.getEmbeddedResource(
-            jsonPointer,
-            resource,
-        );
+        let resources: Resource | Resource[] | Promise<Resource | Resource[] | void> = jsonPointer.get(
+            resource.original(),
+        ) as Resource;
+
+        if (!resources) {
+            resources = this.getEmbeddedResource(jsonPointer, resource);
+        }
         if (!resources) {
             resources = this.getLinkedResource(jsonPointer, resource);
         }
@@ -76,7 +79,7 @@ export class HyperMashmau {
     }
 
     private async getLinkedResource(pointer: JsonPointer, resource: Resource) {
-        const links = resource.allLinkArrays() ?? {};
+        const links = resource.allLinkArrays();
         const findCorrectPath = (path: PathSegments): JsonPointer => {
             const jsonPointer = JsonPointer.create(path);
             if (JsonPointer.has(links, jsonPointer)) {
@@ -87,25 +90,26 @@ export class HyperMashmau {
             }
         };
         const linkPointer = findCorrectPath([...pointer.path]);
-        const linkResource = linkPointer.get(links);
+        if (linkPointer?.path.length > 0) {
+            const linkResource = linkPointer.get(links);
+            if (linkResource) {
+                let link: Link;
+                if (Array.isArray(linkResource)) {
+                    link = linkResource[0];
+                } else {
+                    link = linkResource as Link;
+                }
 
-        if (linkResource) {
-            let link: Link;
-            if (Array.isArray(linkResource)) {
-                link = linkResource[0];
-            } else {
-                link = linkResource as Link;
+                this.httpClient.get(link);
+                const response = await this.httpClient.getResponse();
+                const path = pointer.path.filter((item) => !linkPointer.path.includes(item));
+                return this.getResource(JsonPointer.create(path), response);
             }
-
-            this.httpClient.get(link);
-            const response = await this.httpClient.getResponse();
-            const path = pointer.path.filter((item) => !linkPointer.path.includes(item));
-            return this.getResource(JsonPointer.create(path), response);
         }
     }
 
     private getEmbeddedResource(pointer: JsonPointer, resource: Resource) {
-        const embedded = resource.allEmbeddedResourceArrays() ?? {};
+        const embedded = resource.allEmbeddedResourceArrays();
         return pointer.get(embedded) as Resource | Resource[];
     }
 
@@ -119,11 +123,7 @@ export class HyperMashmau {
             data.pop();
         }
 
-        let jsonPointer = pointer.slice(0, start - 1);
-        if (jsonPointer.slice(jsonPointer.length - 1) === '/') {
-            // in case depth is not specified it will return everything
-            jsonPointer += '-';
-        }
+        const jsonPointer = pointer.slice(0, start - 1);
 
         return { data, jsonPointer: new JsonPointer(jsonPointer) };
     }
