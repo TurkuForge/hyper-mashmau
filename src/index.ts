@@ -64,10 +64,13 @@ export class HyperMashmau {
     }
 
     private async getResource(jsonPointer: JsonPointer, resource: Resource): Promise<Resource | Resource[] | void> {
-        let resources: Resource | Resource[] | Promise<Resource | Resource[] | void> = this.getEmbeddedResource(
-            jsonPointer,
-            resource,
-        );
+        let resources: Resource | Resource[] | Promise<Resource | Resource[] | void> = jsonPointer.get(
+            resource?.original(),
+        ) as Resource;
+
+        if (!resources) {
+            resources = this.getEmbeddedResource(jsonPointer, resource);
+        }
         if (!resources) {
             resources = this.getLinkedResource(jsonPointer, resource);
         }

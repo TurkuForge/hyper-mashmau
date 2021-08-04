@@ -51,6 +51,17 @@ describe('HyperMashmau usage', () => {
         expect(gender).to.equal('non-binary');
     });
 
+    it('Can get data from array link', async () => {
+        const { access } = await hyperMashmau.get<{ access: string }>(`/hm:access/0/{
+            access
+        }`);
+
+        expect(
+            httpClient.get.calledWith({ name: 'full', href: 'https://example.org/api/access?full', templated: false }),
+        ).to.true;
+        expect(access).to.equal('full');
+    });
+
     it('Can get full resource from each item in the list when data is missing from _embedded', async () => {
         const [hugo, percy] = await hyperMashmau.get<UserResponse[]>(`/hm:users/{
             name,
