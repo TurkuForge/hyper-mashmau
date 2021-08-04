@@ -65,7 +65,7 @@ export class HyperMashmau {
 
     private async getResource(jsonPointer: JsonPointer, resource: Resource): Promise<Resource | Resource[] | void> {
         let resources: Resource | Resource[] | Promise<Resource | Resource[] | void> = jsonPointer.get(
-            resource?.original(),
+            resource.original(),
         ) as Resource;
 
         if (!resources) {
@@ -79,7 +79,7 @@ export class HyperMashmau {
     }
 
     private async getLinkedResource(pointer: JsonPointer, resource: Resource) {
-        const links = resource.allLinkArrays() ?? {};
+        const links = resource.allLinkArrays();
         const findCorrectPath = (path: PathSegments): JsonPointer => {
             const jsonPointer = JsonPointer.create(path);
             if (JsonPointer.has(links, jsonPointer)) {
@@ -90,7 +90,7 @@ export class HyperMashmau {
             }
         };
         const linkPointer = findCorrectPath([...pointer.path]);
-        if (linkPointer?.path?.length > 0) {
+        if (linkPointer?.path.length > 0) {
             const linkResource = linkPointer.get(links);
             if (linkResource) {
                 let link: Link;
@@ -109,7 +109,7 @@ export class HyperMashmau {
     }
 
     private getEmbeddedResource(pointer: JsonPointer, resource: Resource) {
-        const embedded = resource.allEmbeddedResourceArrays() ?? {};
+        const embedded = resource.allEmbeddedResourceArrays();
         return pointer.get(embedded) as Resource | Resource[];
     }
 
