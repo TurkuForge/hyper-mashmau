@@ -54,6 +54,6 @@
   "license": "ISC",
   "dependencies": {
     "halfred": "^2.0.0",
-    "json-ptr": "^2.2.0"
+    "json-ptr": "^3.0.0"
   }
 }
